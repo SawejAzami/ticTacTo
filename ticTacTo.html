@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac To</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+      }
+      #container {
+        padding: 5px;
+        /* background-color: #566aeb; */
+        border: 1px solid rgb(4, 4, 4);
+        border-radius: 5px;
+        height: 200px;
+        width: 200px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+      }
+      li {
+        border: 1px solid black;
+        height: 60px;
+        width: 60px;
+        font-size: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: aqua;
+        list-style: none;
+      }
+      /* li:nth-child(2n){
+        color: red;
+      }
+      li:nth-child(2n-1){
+        color: rgb(1, 91, 246);
+      } */
+      button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: 1px solid black;
+        background-color: rgb(245, 247, 246);
+      }
+      button:hover {
+        background-color: rgb(197, 199, 197);
+        cursor: pointer;
+      }
+      .turn_box {
+        display: flex;
+        font-size: 30px;
+      }
+      .turn {
+        margin-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="turn_box">
+        <div>Turn :</div>
+        <div class="turn">O</div>
+      </div>
+      <div id="container">
+        <li id="0"></li>
+        <li id="1"></li>
+        <li id="2"></li>
+        <li id="3"></li>
+        <li id="4"></li>
+        <li id="5"></li>
+        <li id="6"></li>
+        <li id="7"></li>
+        <li id="8"></li>
+      </div>
+      <div>
+        <button onclick="reset()">Reset</button>
+      </div>
+    </div>
+  </body>
+  <script>
+    let arrColor = [0, 0, 0];
+    let flag = true;
+    let val = "O";
+    const container = document.getElementById("container");
+    const turn_box = document.querySelector(".turn_box");
+    let turn = document.querySelector(".turn");
+    
+    container.addEventListener("click", (e) => {
+
+      
+
+      if (e.target !== container && e.target.innerText == "" && flag == true) {
+        // take index value
+        
+        let index = Number(e.target.getAttribute("id"));
+
+        insertInMatrix(index, val);
+
+        if (val == "O" && e.target.innerText == "") {
+          e.target.innerText = val;
+          val = "X";
+        } else if (e.target.innerText == "") {
+          e.target.innerText = val;
+          val = "O";
+        }
+        if (val == "X") {
+          e.target.style.color = "red";
+        } else {
+          e.target.style.color = "green";
+        }
+      }
+      if (val == "O") {
+        turn.innerText = "O";
+      } else {
+        turn.innerText = "X";
+      }
+    });
+
+    // reset button
+    function reset() {
+      location.reload();
+    }
+
+    //insertInMatrix
+
+    let rowX = [0, 0, 0];
+    let rowO = [0, 0, 0];
+    let colX = [0, 0, 0];
+    let colO = [0, 0, 0];
+    let diag1 = [0, ""];
+    let diaX = [0, 0, 0];
+    let i = 0;
+    let diag2 = [0, ""];
+    let diaO = [0, 0, 0];
+    let j = 0;
+    function insertInMatrix(index, val) {
+      let row = Math.floor(index / 3);
+      let col = index % 3;
+ // diagonal part
+      if (row == col) {
+        // console.log(row + "" + col);
+        if (diag1[1] == "" || diag1[1] == val) {
+          diag1[1]=val;
+          diaO[i] = index;
+          i++;
+          diag1[0] += 1;
+          if (diag1[0] == 3 ) {
+            evaluteDiagonal(diaO);
+            flag = false;
+          }
+        }
+      }
+
+      if (
+        (row == 0 && col == 2) ||
+        (row == 2 && col == 0) ||
+        (row == 1 && col == 1)
+      ) {
+        // console.log(row + "" + col);
+        // diagonal part
+        if (diag2[1] == "" || diag2[1] == val) {
+          diag2[1]=val;
+          diaX[j] = index;
+          j++;
+          diag2[0] += 1;
+          if (diag2[0] == 3  ) {
+            evaluteDiagonal(diaX);
+            flag = false;
+          }
+        }
+      }
+      // for (let k = 0; k < 3; k++) {
+      //   console.log(diaO[k]);
+      // }
+      if (val == "X") {
+        rowX[row] += 1;
+        colX[col] += 1;
+        
+        if (rowX[row] == 3 || colX[col] == 3) {
+          flag = false;
+          rowX[row] == 3
+            ? evaluate((row1 = "row"), row)
+            : evaluate((col1 = "col"), col);
+        }
+      } else {
+        rowO[row] += 1;
+        colO[col] += 1;
+        if (rowO[row] == 3 || colO[col] == 3) {
+          flag = false;
+          rowO[row] == 3
+            ? evaluate((row1 = "row"), row)
+            : evaluate((col1 = "col"), col);
+        }
+      }
+    }
+
+    function evaluate(row_col, val) {
+      // console.log(row_col+" "+val)
+      if (row_col == "row") {
+        arrColor[0] = val * 3 + 0;
+        arrColor[1] = val * 3 + 1;
+        arrColor[2] = val * 3 + 2;
+      } else {
+        arrColor[0] = val + 0;
+        arrColor[1] = val + 3;
+        arrColor[2] = val + 6;
+      }
+      winner();
+      arrColor.forEach((i) => {
+        document.getElementById(`${i}`).style.backgroundColor = "blue";
+        // console.log(i)
+        
+      });
+    }
+    function evaluteDiagonal(arr) {
+      winner();
+        arr.forEach((i) => {
+        document.getElementById(`${i}`).style.backgroundColor = "blue";
+        // console.log(i);
+      }); 
+    }
+    
+    function winner(){
+        turn_box.innerHTML="Winner is "+val
+      }
+  </script>
+</html>
